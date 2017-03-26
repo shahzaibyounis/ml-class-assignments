@@ -18,9 +18,16 @@ grad = zeros(size(theta));
 %               derivatives of the cost w.r.t. each parameter in theta
 
 
+h = sigmoid(theta' * X');
 
+thetaWithoutFirstColumn = theta(2:length(theta), :);
+J = (sum( ((y.*-1).*(log(h)')) - ((1-y).*(log(1-h)')) )/ length(y)) + ((lambda/(2*m))*(sum(thetaWithoutFirstColumn.^2)));
 
+gradWithoutLambda = (m^-1) * (sum((h'-y).* X))';
+XWithoutFirstColumn = X(:,2:length(theta));
 
+grad = (m^-1) * (sum((h'-y).* XWithoutFirstColumn))' + ((lambda/m)*thetaWithoutFirstColumn);
+grad = [gradWithoutLambda(1,1) ; grad];
 
 % =============================================================
 
