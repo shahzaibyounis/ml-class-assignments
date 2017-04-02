@@ -22,12 +22,17 @@ p = zeros(size(X, 1), 1);
 %
 
 
+% Add ones to the X data matrix
+X = [ones(m, 1) X];
+a2 = sigmoid(Theta1 * X');
+a2 = a2'
 
+a2 = [ones(m, 1) a2];
+a3 = sigmoid(Theta2 * a2');
+a3 = a3';
 
-
-
-
-
+[MaxProbability, Indices] = max(a3, [], 2);
+p = Indices;
 
 % =========================================================================
 

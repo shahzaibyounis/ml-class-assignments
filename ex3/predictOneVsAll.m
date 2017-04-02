@@ -31,9 +31,15 @@ X = [ones(m, 1) X];
 %       
 
 
+predictAllRecordsForEachClassifer = zeros(size(X, 1), num_labels);
+
+for c = 1:num_labels
+    predictAllRecordsForEachClassifer(:,c) = sigmoid(all_theta(c,:) * X')';
+end 
 
 
-
+[MaxProbability, Indices] = max(predictAllRecordsForEachClassifer, [], 2);
+p = Indices;
 
 
 % =========================================================================

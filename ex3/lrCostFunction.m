@@ -41,9 +41,16 @@ grad = zeros(size(theta));
 
 
 
+h = sigmoid(theta' * X');
 
+thetaWithoutFirstEntry = theta(2:end, :);
+J = (sum( ((y.*-1).*(log(h)')) - ((1-y).*(log(1-h)')) )/ length(y)) + ((lambda/(2*m))*(sum(thetaWithoutFirstEntry.^2)));
 
+gradWithoutRegularization = (m^-1) * (sum((h'-y).* X))';
+XWithoutFirstFeature = X(:,2:length(theta));
 
+grad = (m^-1) * (sum((h'-y).* XWithoutFirstFeature))' + ((lambda/m)*thetaWithoutFirstEntry);
+grad = [gradWithoutRegularization(1,1) ; grad];
 
 % =============================================================
 
