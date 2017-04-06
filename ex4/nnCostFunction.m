@@ -62,25 +62,84 @@ Theta2_grad = zeros(size(Theta2));
 %               and Theta2_grad from Part 2.
 %
 
+% -------------------------------------------------------------
+% Part 1: Cost (including Regularized)
+% -------------------------------------------------------------
 
+XWithBiasOnes = [ones(m,1) X];
+a2 = sigmoid(XWithBiasOnes * Theta1');
 
+a2 = [ones(m, 1) a2];
+a3 = sigmoid(a2 * Theta2');
 
+h = a3;
 
+yClassified = zeros(m, num_labels);
 
+for i=1:m
+    yClassified(i,y(i,1)) = 1;
+end
 
+J = ((yClassified.*-1).*(log(h))) - ((1-yClassified).*(log(1-h)));
+J = sum(J,2);
+J = sum(J);
+J = J/length(y);
 
+if(lambda > 0)
+    % regularized cost
+    Theta1WithoutFirstEntry = Theta1(:,2:end);
+    Theta1Sum = sum(sum(Theta1WithoutFirstEntry.^2));
 
+    Theta2WithoutFirstEntry = Theta2(:,2:end);
+    Theta2Sum = sum(sum(Theta2WithoutFirstEntry.^2));
 
-
-
-
-
-
-
-
-
+    JRegularized = J + ((lambda/(2*m))*(Theta1Sum + Theta2Sum));
+    J = JRegularized;    
+end
 
 % -------------------------------------------------------------
+% Part 2 & 3: Gradient (including Regularized)
+% -------------------------------------------------------------
+
+Theta1AccumulatedDelta = 0;
+Theta2AccumulatedDelta = 0;
+
+for t=1:m
+    % Step-1
+    a1 = X(t,:);
+    
+    a1 = [ones(1,1) a1];
+    z2 = a1 * Theta1';
+    a2 = sigmoid(z2);
+
+    a2 = [ones(1,1) a2];
+    z3 = a2 * Theta2';
+    a3 = sigmoid(z3);
+    
+    % Step-2
+    a3Delta = a3 - yClassified(t,:);
+    
+    % Step-3
+    a2Delta = (a3Delta * Theta2);
+    a2Delta = a2Delta(:,2:end);
+    a2Delta = a2Delta .* sigmoidGradient(z2);
+    
+    % Step-4
+    Theta1AccumulatedDelta = Theta1AccumulatedDelta + (a2Delta' * a1);
+    Theta2AccumulatedDelta = Theta2AccumulatedDelta + (a3Delta' * a2);    
+end
+
+Theta1_grad = Theta1AccumulatedDelta / m;
+Theta2_grad = Theta2AccumulatedDelta / m;
+
+% Now calculate regularized gradient (i.e. derivative)
+Theta1MinusBiasUnit = Theta1(:,2:end);
+regularizedTheta1 = (lambda/m)*Theta1MinusBiasUnit;    
+Theta1_grad = Theta1_grad + [zeros(size(Theta1,1),1) regularizedTheta1];
+
+Theta2MinusBiasUnit = Theta2(:,2:end);
+regularizedTheta2 = (lambda/m)*Theta2MinusBiasUnit;
+Theta2_grad = Theta2_grad + [zeros(size(Theta2,1),1) regularizedTheta2];
 
 % =========================================================================
 
