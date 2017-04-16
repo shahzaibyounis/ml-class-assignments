@@ -21,12 +21,24 @@ grad = zeros(size(theta));
 
 
 
+h = X * theta;
+J = sum((h-y).^2)/(2*m);
 
+% regularized cost
+thetaMinusFirstUnit = theta(2:length(theta), :);
+J = J + (lambda/(2*m)) * sum(thetaMinusFirstUnit.^2);
 
+% gradient
+regGradientFirstUnit = sum((h-y) .* X(:,1)) / m;
 
+if(length(theta) > 1)
+    regGradientMinusFirstUnit = sum((h-y) .* X(:,2:end)) / m;
+    regGradientMinusFirstUnit = regGradientMinusFirstUnit + (lambda/m) * theta(2:end,:)';
 
-
-
+    grad = [regGradientFirstUnit; regGradientMinusFirstUnit'];
+else
+    grad = regGradientFirstUnit;
+end
 
 
 
